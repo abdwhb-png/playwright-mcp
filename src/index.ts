@@ -67,6 +67,7 @@ const screenshotTools: Tool<any>[] = [
 type Options = {
   browser?: string;
   userDataDir?: string;
+  profileDirectory?: string;
   headless?: boolean;
   executablePath?: string;
   cdpEndpoint?: string;
@@ -104,7 +105,7 @@ export async function createServer(options?: Options): Promise<Server> {
       browserName = 'chromium';
       channel = 'chrome';
   }
-  const userDataDir = options?.userDataDir ?? await createUserDataDir(browserName);
+  const userDataDir = options?.userDataDir ? options?.userDataDir + (options?.profileDirectory ? `/${options.profileDirectory}` : '') : await createUserDataDir(browserName);
 
   const launchOptions: LaunchOptions = {
     headless: !!(options?.headless ?? (os.platform() === 'linux' && !process.env.DISPLAY)),
