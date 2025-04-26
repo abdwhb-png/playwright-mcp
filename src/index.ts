@@ -105,10 +105,8 @@ export async function createServer(options?: Options): Promise<Server> {
       browserName = "chromium";
       channel = "chrome";
   }
-  const userDataDir = options?.userDataDir
-    ? options?.userDataDir +
-      (options?.profileDirName ? `/${options.profileDirName}` : "")
-    : await createUserDataDir(browserName);
+  const userDataDir =
+    options?.userDataDir ?? (await createUserDataDir(browserName));
 
   const launchOptions: LaunchOptions = {
     headless: !!(
@@ -117,6 +115,7 @@ export async function createServer(options?: Options): Promise<Server> {
     ),
     channel,
     executablePath: options?.executablePath,
+    args: options?.profileDirName ? ['--profile-directory=' + options.profileDirName] : [],
   };
 
   const allTools = options?.vision ? screenshotTools : snapshotTools;

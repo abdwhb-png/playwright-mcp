@@ -1,6 +1,6 @@
 {
-  "name": "@abdwhb-playwright/mcp",
-  "version": "0.0.16",
+  "name": "@yourdevlab/playwright-mcp",
+  "version": "0.0.21",
   "description": "Playwright Tools for MCP",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
     "ctest": "playwright test --project=chrome",
     "ftest": "playwright test --project=firefox",
     "wtest": "playwright test --project=webkit",
-    "clean": "rimraf lib",
+    "clean": "if exist lib rmdir /s /q lib",
     "npm-publish": "npm run clean && npm run build && npm run test && npm publish"
   },
   "exports": {
