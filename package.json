@@ -1,17 +1,17 @@
 {
-  "name": "@playwright/mcp",
-  "version": "0.0.15",
+  "name": "@abdwhb-playwright/mcp",
+  "version": "0.0.16",
   "description": "Playwright Tools for MCP",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/microsoft/playwright-mcp.git"
+    "url": "git+https://github.com/abdwhb-png/playwright-mcp.git"
   },
   "homepage": "https://playwright.dev",
   "engines": {
     "node": ">=18"
   },
   "author": {
-    "name": "Microsoft Corporation"
+    "name": "abdwhb"
   },
   "license": "Apache-2.0",
   "scripts": {
@@ -23,7 +23,7 @@
     "ctest": "playwright test --project=chrome",
     "ftest": "playwright test --project=firefox",
     "wtest": "playwright test --project=webkit",
-    "clean": "rm -rf lib",
+    "clean": "rimraf lib",
     "npm-publish": "npm run clean && npm run build && npm run test && npm publish"
   },
   "exports": {

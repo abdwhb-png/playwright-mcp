@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import os from 'os';
-import fs from 'fs';
+import path from "path";
+import os from "os";
+import fs from "fs";
 
-import { createServerWithTools } from './server';
-import common from './tools/common';
-import console from './tools/console';
-import dialogs from './tools/dialogs';
-import files from './tools/files';
-import install from './tools/install';
-import keyboard from './tools/keyboard';
-import navigate from './tools/navigate';
-import network from './tools/network';
-import pdf from './tools/pdf';
-import snapshot from './tools/snapshot';
-import tabs from './tools/tabs';
-import screen from './tools/screen';
+import { createServerWithTools } from "./server";
+import common from "./tools/common";
+import console from "./tools/console";
+import dialogs from "./tools/dialogs";
+import files from "./tools/files";
+import install from "./tools/install";
+import keyboard from "./tools/keyboard";
+import navigate from "./tools/navigate";
+import network from "./tools/network";
+import pdf from "./tools/pdf";
+import snapshot from "./tools/snapshot";
+import tabs from "./tools/tabs";
+import screen from "./tools/screen";
 
-import type { Tool, ToolCapability } from './tools/tool';
-import type { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import type { LaunchOptions } from 'playwright';
+import type { Tool, ToolCapability } from "./tools/tool";
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import type { LaunchOptions } from "playwright";
 
 const snapshotTools: Tool<any>[] = [
   ...common(true),
@@ -67,7 +67,7 @@ const screenshotTools: Tool<any>[] = [
 type Options = {
   browser?: string;
   userDataDir?: string;
-  profileDirectory?: string;
+  profileDirName?: string;
   headless?: boolean;
   executablePath?: string;
   cdpEndpoint?: string;
@@ -75,48 +75,59 @@ type Options = {
   capabilities?: ToolCapability[];
 };
 
-const packageJSON = require('../package.json');
+const packageJSON = require("../package.json");
 
 export async function createServer(options?: Options): Promise<Server> {
-  let browserName: 'chromium' | 'firefox' | 'webkit';
+  let browserName: "chromium" | "firefox" | "webkit";
   let channel: string | undefined;
   switch (options?.browser) {
-    case 'chrome':
-    case 'chrome-beta':
-    case 'chrome-canary':
-    case 'chrome-dev':
-    case 'msedge':
-    case 'msedge-beta':
-    case 'msedge-canary':
-    case 'msedge-dev':
-      browserName = 'chromium';
+    case "chrome":
+    case "chrome-beta":
+    case "chrome-canary":
+    case "chrome-dev":
+    case "msedge":
+    case "msedge-beta":
+    case "msedge-canary":
+    case "msedge-dev":
+      browserName = "chromium";
       channel = options.browser;
       break;
-    case 'chromium':
-      browserName = 'chromium';
+    case "chromium":
+      browserName = "chromium";
       break;
-    case 'firefox':
-      browserName = 'firefox';
+    case "firefox":
+      browserName = "firefox";
       break;
-    case 'webkit':
-      browserName = 'webkit';
+    case "webkit":
+      browserName = "webkit";
       break;
     default:
-      browserName = 'chromium';
-      channel = 'chrome';
+      browserName = "chromium";
+      channel = "chrome";
   }
-  const userDataDir = options?.userDataDir ? options?.userDataDir + (options?.profileDirectory ? `/${options.profileDirectory}` : '') : await createUserDataDir(browserName);
+  const userDataDir = options?.userDataDir
+    ? options?.userDataDir +
+      (options?.profileDirName ? `/${options.profileDirName}` : "")
+    : await createUserDataDir(browserName);
 
   const launchOptions: LaunchOptions = {
-    headless: !!(options?.headless ?? (os.platform() === 'linux' && !process.env.DISPLAY)),
+    headless: !!(
+      options?.headless ??
+      (os.platform() === "linux" && !process.env.DISPLAY)
+    ),
     channel,
     executablePath: options?.executablePath,
   };
 
   const allTools = options?.vision ? screenshotTools : snapshotTools;
-  const tools = allTools.filter(tool => !options?.capabilities || tool.capability === 'core' || options.capabilities.includes(tool.capability));
+  const tools = allTools.filter(
+    (tool) =>
+      !options?.capabilities ||
+      tool.capability === "core" ||
+      options.capabilities.includes(tool.capability)
+  );
   return createServerWithTools({
-    name: 'Playwright',
+    name: "Playwright",
     version: packageJSON.version,
     tools,
     resources: [],
@@ -127,17 +138,24 @@ export async function createServer(options?: Options): Promise<Server> {
   });
 }
 
-async function createUserDataDir(browserName: 'chromium' | 'firefox' | 'webkit') {
+async function createUserDataDir(
+  browserName: "chromium" | "firefox" | "webkit"
+) {
   let cacheDirectory: string;
-  if (process.platform === 'linux')
-    cacheDirectory = process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache');
-  else if (process.platform === 'darwin')
-    cacheDirectory = path.join(os.homedir(), 'Library', 'Caches');
-  else if (process.platform === 'win32')
-    cacheDirectory = process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
-  else
-    throw new Error('Unsupported platform: ' + process.platform);
-  const result = path.join(cacheDirectory, 'ms-playwright', `mcp-${browserName}-profile`);
+  if (process.platform === "linux")
+    cacheDirectory =
+      process.env.XDG_CACHE_HOME || path.join(os.homedir(), ".cache");
+  else if (process.platform === "darwin")
+    cacheDirectory = path.join(os.homedir(), "Library", "Caches");
+  else if (process.platform === "win32")
+    cacheDirectory =
+      process.env.LOCALAPPDATA || path.join(os.homedir(), "AppData", "Local");
+  else throw new Error("Unsupported platform: " + process.platform);
+  const result = path.join(
+    cacheDirectory,
+    "ms-playwright",
+    `mcp-${browserName}-profile`
+  );
   await fs.promises.mkdir(result, { recursive: true });
   return result;
 }
